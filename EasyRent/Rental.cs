@@ -94,5 +94,3 @@ class Rental
         return sb.ToString();
     }
 }
-
-```
