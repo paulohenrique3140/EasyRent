@@ -1,4 +1,4 @@
-﻿enum Carroceria
+﻿enum CarBody
 {
     Hatch = 1,
     Sedan,
@@ -6,9 +6,9 @@
     Utilitario
 }
 
-enum StatusLocacao
+enum RentStatus
 {
-    Aberta = 1,
-    Finalizada,
-    Cancelada
+    Open = 1,
+    Finished,
+    Canceled
 }
