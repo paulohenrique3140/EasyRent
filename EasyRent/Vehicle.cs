@@ -20,14 +20,9 @@
 
     public Vehicle(){ } // Constructor to create an empty object
 
-    public bool UpdateMileage(int currentMileage) // Updates the vehicle's mileage when closing the rental
+    public void UpdateMileage(int CurrentMileage) // Updates the vehicle's mileage when closing the rental
     {
-        if (currentMileage >= CurrentMileage)
-        {
-            CurrentMileage = currentMileage;
-            return true;
-        }
-        return false;
+        this.CurrentMileage = CurrentMileage;
     }
 
     public string ShowVehicle() // Method to return a vehicle object

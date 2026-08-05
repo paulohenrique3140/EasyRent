@@ -54,6 +54,7 @@ class Rental
         if (endingMileage >= Vehicle.CurrentMileage)
         {
             Vehicle.UpdateMileage(endingMileage);
+            Status = RentStatus.Finished;
             return true;
         }
         return false;
