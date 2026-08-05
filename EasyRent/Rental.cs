@@ -49,10 +49,14 @@ class Rental
         return CalculateBaseValue(daily) + CalculateInsurance() + CalculatePenalty(currentMileage);
     }
 
-    public void CloseRental(int kmFinal) // Method to close the rental
+    public bool CloseRental(int endingMileage) // Method to close the rental
     {
-        Vehicle.UpdateMileage(kmFinal);
-        Status = RentStatus.Finished;
+        if (endingMileage >= Vehicle.CurrentMileage)
+        {
+            Vehicle.UpdateMileage(endingMileage);
+            return true;
+        }
+        return false;
     }
 
     public void CancelRental() // Method to cancel the rental

@@ -137,6 +137,12 @@ while (true)
                             Console.WriteLine("@@@ Return Panel @@@");
                             Console.Write("Enter current vehicle mileage: ");
                             int kmFinal = Convert.ToInt32(Console.ReadLine());
+                            while (!locacao.CloseRental(kmFinal))
+                            {
+                                Console.WriteLine("The current mileage can't be lower than the mileage recorded when the vehicle was picked up.");
+                                Console.Write("Please try again. Enter the current vehicle: ");
+                                kmFinal = Convert.ToInt32(Console.ReadLine());
+                            }
                             locacao.CloseRental(kmFinal);
                             Console.WriteLine("\nRental closed!" + locacao.ShowSummary(veiculo.CurrentMileage));
                             break;

@@ -1,5 +1,7 @@
 ﻿class Vehicle
 {
+    // PROXIMOS PASSOS: MELHORAR O MÉTODO DE ATUALIZAR KM E CRIAR UM VALIDADOR DE PLACA
+
     // vehicle properties
     public string? Model { get; set; }
     public string? LicencePlate { get; set; }
@@ -18,9 +20,14 @@
 
     public Vehicle(){ } // Constructor to create an empty object
 
-    public void UpdateMileage(int CurrentMileage)
+    public bool UpdateMileage(int currentMileage) // Updates the vehicle's mileage when closing the rental
     {
-        this.CurrentMileage = CurrentMileage;
+        if (currentMileage >= CurrentMileage)
+        {
+            CurrentMileage = currentMileage;
+            return true;
+        }
+        return false;
     }
 
     public string ShowVehicle() // Method to return a vehicle object
