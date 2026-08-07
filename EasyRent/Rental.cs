@@ -5,7 +5,19 @@ class Rental
     // rental properties
     public Client? Client { get; }
     public Vehicle? Vehicle { get; }
-    public int RentalDays { get; private set; }
+    private int rentalDays;
+    public int RentalDays 
+    {
+        get { return rentalDays; }
+        set
+        {
+            while (value <= 0)
+            {
+                throw new ArgumentException("It's not possible conclude your reservation with 0 dailys");
+            }
+
+        }
+    }
     public bool HasInsurance { get; private set; }
     public int InicialMileage { get; private set; }
     public RentStatus Status { get; private set; }
