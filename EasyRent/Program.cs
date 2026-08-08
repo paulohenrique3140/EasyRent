@@ -1,70 +1,36 @@
-﻿// INSTANTIATING CLASS OBJECTS
-Client? cliente = null;
-Vehicle? veiculo = null;
-Rental? locacao = null;
+﻿// INSTANTIATING RENTALSERVICE OBJECT
+RentalService rentalService = new RentalService();
+Console.WriteLine(@"
+           ______
+      ____/|_||_\`.__
+     (   _    _ _   _\
+     =`-(_)--(_)-'    
+
+====================================
+          E A S Y   R E N T
+        VEHICLE RENTAL SYSTEM
+====================================
+");
 
 while (true)
 {
-    // DISPLAYING INITIAL MENU
-    Console.WriteLine("\n### EASY RENT - VEHICLE RENTAL ###");
-    Console.WriteLine("\nMenu: \n" +
-                      "\n[1] Register client" +
-                      "\n[2] Register vehicle" +
+    // DISPLAYING MAIN MENU
+    Console.WriteLine("\n=-=-=-=-=-=-= Main Menu =-=-=-=-=-=-=");
+    Console.WriteLine("\n[1] Client" +
+                      "\n[2] Vehicle" +
+                      "\n[3] Rental" +
                       "\n[0] Exit\n");
-    Console.Write("\nEnter the desired option: ");
-    var entrada = Console.ReadLine();
+    int mainMenuOption = RentalService.ReadMenuOption(3); // METHOD TO INPUT VALIDATIONS
 
-    // VALIDATING THE ENTERED INPUT FOR THE MENU
-    bool conversaoValida = int.TryParse(entrada, out int opcaoMenuInicial);
-    bool? validaEntrada = ValidaEntrada(conversaoValida, opcaoMenuInicial);
-    if (validaEntrada == false) { break; }
-    else if (validaEntrada == true) { continue; }
-
-    // INITIAL MENU SWITCH
-    switch (opcaoMenuInicial)
+    if(mainMenuOption == 0)
     {
-        case 1: // CREATING THE CLIENT CLASS OBJECT
-            Console.WriteLine("\n@@@ Client Registration @@@");
-            Console.Write("\nFull name: ");
-            string? nome = Console.ReadLine();
-            Console.Write("CPF: ");
-            string? cpf = Console.ReadLine();
-            Console.Write("Driver's License (CNH): ");
-            string? cnh = Console.ReadLine();
-            DateTime dataNascimento;
-            while (true)
-            {
-                Console.Write("Date of birth [MM/DD/YYYY]: ");
-                string? entradaData = Console.ReadLine();
-                if (DateTime.TryParse(entradaData, out dataNascimento))
-                    break;
-                Console.WriteLine("Invalid date. Please try again.\n");
-            }
-            cliente = new Client(nome, cpf, cnh, Client.CalculateAge(dataNascimento));
-            break;
-
-        case 2: // CREATING THE VEHICLE CLASS OBJECT
-            Console.WriteLine("\n@@@ Vehicle Registration @@@");
-            Console.Write("\nModel: ");
-            string? modelo = Console.ReadLine();
-            Console.Write("License plate: ");
-            string? placa = Console.ReadLine();
-            Console.Write("Body style [1-Hatch / 2-Sedan / 3-SUV / 4-Utility]: ");
-            int carroceria = Convert.ToInt32(Console.ReadLine());
-            Console.Write("Daily rate: $ ");
-            double valorDiaria = Convert.ToDouble(Console.ReadLine());
-            Console.Write("Current mileage: ");
-            int kmAtual = Convert.ToInt32(Console.ReadLine());
-            veiculo = new Vehicle(modelo, placa, (CarBody)carroceria, valorDiaria, kmAtual);
-            break;
-        default:
-            Console.Write("\nInvalid option! Please enter one of the listed options: \n");
-            break;
+        Console.WriteLine("Closing... ");
+        break;
     }
 
-    // VALIDATING IF CLIENT AND VEHICLE WERE CREATED
-    if (cliente != null && veiculo != null)
+    switch (mainMenuOption)
     {
+<<<<<<< Updated upstream
         while (true)
         {
             // DISPLAYING SECOND MENU
@@ -159,27 +125,16 @@ while (true)
                 }
             }
         }
+=======
+        case 1:
+            Console.WriteLine("Client case");
+            break;
+        case 2:
+            Console.WriteLine("Vehicle case");
+            break;
+        case 3:
+            Console.WriteLine("Rental case");
+            break;
+>>>>>>> Stashed changes
     }
-}
-
-static bool? ValidaEntrada(bool conversaoValida, int opcaoMenu)
-{
-    if (!conversaoValida)
-    {
-        Console.WriteLine("\nInvalid option! Please enter numbers only.\n");
-        return true;
-    }
-
-    if (opcaoMenu < 0 || opcaoMenu > 8)
-    {
-        Console.Write("\nInvalid option! Please enter one of the listed options: \n");
-        return true;
-    }
-
-    if (opcaoMenu == 0)
-    {
-        Console.WriteLine("\nCLOSING ...");
-        return false;
-    }
-    return null;
 }
