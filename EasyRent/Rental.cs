@@ -5,9 +5,6 @@ class Rental
     // rental properties
     public Client? Client { get; }
     public Vehicle? Vehicle { get; }
-<<<<<<< Updated upstream
-    public int RentalDays { get; private set; }
-=======
     private int rentalDays;
     public int RentalDays 
     {
@@ -21,7 +18,6 @@ class Rental
             rentalDays = value;
         }
     }
->>>>>>> Stashed changes
     public bool HasInsurance { get; private set; }
     public int InicialMileage { get; private set; }
     public RentStatus Status { get; private set; }
@@ -64,25 +60,6 @@ class Rental
     {
         return CalculateBaseValue(daily) + CalculateInsurance() + CalculatePenalty(currentMileage);
     }
-
-<<<<<<< Updated upstream
-    public void CloseRental(int kmFinal) // Method to close the rental
-    {
-        Vehicle.UpdateMileage(kmFinal);
-        Status = RentStatus.Finished;
-=======
-    public bool CloseRental(int currentMileage) // Method to close the rental
-    {
-        if (currentMileage >= Vehicle.CurrentMileage)
-        {
-            Vehicle.UpdateMileage(currentMileage);
-            Status = RentStatus.Finished;
-            return true;
-        }
-        return false;
->>>>>>> Stashed changes
-    }
-
     public void CancelRental() // Method to cancel the rental
     {
         Status = RentStatus.Canceled;
@@ -129,5 +106,3 @@ class Rental
         return sb.ToString();
     }
 }
-
-```
