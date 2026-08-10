@@ -15,7 +15,11 @@ class Rental
             {
                 throw new ArgumentException("It's not possible conclude your reservation with 0 dailys");
             }
+<<<<<<< HEAD
 
+=======
+            rentalDays = value;
+>>>>>>> feature/rentalservice
         }
     }
     public bool HasInsurance { get; private set; }
@@ -45,10 +49,10 @@ class Rental
         return HasInsurance ? RentalDays * 50.00 : 0;
     }
 
-    public double CalculatePenalty(int initialMileage) // Method to calculate penality
+    public double CalculatePenalty(int currentMileage) // Method to calculate penality
     {
         double penalty = 0;
-        int totalMileage = initialMileage - InicialMileage;
+        int totalMileage = currentMileage - InicialMileage;
         if (totalMileage / RentalDays > 100)
         {
             penalty = (totalMileage - 100 * RentalDays) * 1.2;
@@ -71,22 +75,27 @@ class Rental
         }
         return false;
     }
-
     public void CancelRental() // Method to cancel the rental
     {
         Status = RentStatus.Canceled;
     }
 
-    public string ShowSummary(int currentMileage) // Method to show the details of the rental
+    public string ShowOpenRental() // Showing open rental details
     {
         StringBuilder sb = new StringBuilder();
         sb.Append($"\n### RENTAL SUMMARY ###\n" +
-                          $"\nClient name: {Client.Name}" +
+                          $"\nClient: {Client.Name}" +
                           $"\nVehicle: {Vehicle.Model}" +
                           $"\nRental days: {RentalDays}" +
                           $"\nDaily rate: $ {Vehicle.DailyRate:F2}" +
                           $"\nRental status: {Status}" +
                           $"\nVehicle initial mileage: {InicialMileage}");
+        return sb.ToString();
+    }
+
+    public string ShowSummary(int currentMileage) // Showing rental summary
+    {
+        StringBuilder sb = new StringBuilder();
         if (Status == RentStatus.Canceled)
         {
             sb.Clear();
@@ -108,6 +117,7 @@ class Rental
             }
             sb.Append($"\n\n### GRAND TOTAL: $ {CalculateTotal(Vehicle.DailyRate, Vehicle.CurrentMileage):F2} ###");
         }
+        
         return sb.ToString();
     }
 }
