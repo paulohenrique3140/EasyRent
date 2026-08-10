@@ -7,13 +7,13 @@
     public double DailyRate { get; set; }
     public int CurrentMileage { get; set; }
 
-    public Vehicle(string? modelo, string? placa, CarBody carroceria, double valorDiaria, int kmAtual) // vehicle constructor
+    public Vehicle(string? model, string? placa, CarBody carBody, double dailyRate, int currentMileage) // vehicle constructor
     {
-        Model = modelo;
+        Model = model;
         LicencePlate = placa;
-        CarBody = carroceria;
-        DailyRate = valorDiaria;
-        CurrentMileage = kmAtual;
+        CarBody = carBody;
+        DailyRate = dailyRate;
+        CurrentMileage = currentMileage;
     }
 
     public Vehicle(){ } // Constructor to create an empty object

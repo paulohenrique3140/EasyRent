@@ -60,6 +60,17 @@ class Rental
     {
         return CalculateBaseValue(daily) + CalculateInsurance() + CalculatePenalty(currentMileage);
     }
+
+    public bool CloseRental(int endingMileage) // Method to close the rental
+    {
+        if (endingMileage >= Vehicle.CurrentMileage)
+        {
+            Vehicle.UpdateMileage(endingMileage);
+            Status = RentStatus.Finished;
+            return true;
+        }
+        return false;
+    }
     public void CancelRental() // Method to cancel the rental
     {
         Status = RentStatus.Canceled;
@@ -69,7 +80,7 @@ class Rental
     {
         StringBuilder sb = new StringBuilder();
         sb.Append($"\n### RENTAL SUMMARY ###\n" +
-                          $"\nClient name: {Client.Name}" +
+                          $"\nClient: {Client.Name}" +
                           $"\nVehicle: {Vehicle.Model}" +
                           $"\nRental days: {RentalDays}" +
                           $"\nDaily rate: $ {Vehicle.DailyRate:F2}" +
