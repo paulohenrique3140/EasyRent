@@ -15,11 +15,7 @@ class Rental
             {
                 throw new ArgumentException("It's not possible conclude your reservation with 0 dailys");
             }
-<<<<<<< HEAD
-
-=======
             rentalDays = value;
->>>>>>> feature/rentalservice
         }
     }
     public bool HasInsurance { get; private set; }

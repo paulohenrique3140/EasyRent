@@ -1,7 +1,5 @@
 ﻿class Vehicle
 {
-    // PROXIMOS PASSOS: MELHORAR O MÉTODO DE ATUALIZAR KM E CRIAR UM VALIDADOR DE PLACA
-
     // vehicle properties
     public string? Model { get; set; }
     public string? LicencePlate { get; set; }

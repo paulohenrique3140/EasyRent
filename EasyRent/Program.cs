@@ -150,36 +150,9 @@ while (true)
 
                     if (vehicleToUpdate != null)
                     {
-<<<<<<< HEAD
-                        case 1: // CALLING METHOD TO COMPLETE RENTAL (RETURN VEHICLE)
-                            Console.WriteLine("@@@ Return Panel @@@");
-                            Console.Write("Enter current vehicle mileage: ");
-                            int kmFinal = Convert.ToInt32(Console.ReadLine());
-                            while (!locacao.CloseRental(kmFinal))
-                            {
-                                Console.WriteLine("The current mileage can't be lower than the mileage recorded when the vehicle was picked up.");
-                                Console.Write("Please try again. Enter the current vehicle: ");
-                                kmFinal = Convert.ToInt32(Console.ReadLine());
-                            }
-                            locacao.CloseRental(kmFinal);
-                            Console.WriteLine("\nRental closed!" + locacao.ShowSummary(veiculo.CurrentMileage));
-                            break;
-                        case 2: // CALLING METHOD TO CANCEL RESERVATION
-                            locacao.CancelRental();
-                            Console.WriteLine("\n" + locacao.ShowSummary(veiculo.CurrentMileage));
-                            break;
-                        case 3: // DISPLAYING RENTAL DETAILS
-                            Console.WriteLine("@@@ Showing rental @@@");
-                            Console.WriteLine("\n" + locacao.ShowSummary(veiculo.CurrentMileage));
-                            break;
-                        default:
-                            Console.Write("\nInvalid option! Please enter one of the listed options: \n");
-                            break;
-=======
                         Console.WriteLine(vehicleToUpdate.ShowVehicle());
                         Console.Write("\nEnter new car daily rate to update: ");
                         vehicleToUpdate.DailyRate = Convert.ToDouble(Console.ReadLine());
->>>>>>> feature/rentalservice
                     }
                     break;
                 case 3:// Deleting vehicle register
@@ -189,7 +162,7 @@ while (true)
                     {
                         Console.WriteLine(vehicleToDelete.ShowVehicle());
 
-                        Console.Write("\nConfirm client deletion? [y/n]: ");
+                        Console.Write("\nConfirm vehicle deletion? [y/n]: ");
                         string? confirm = Console.ReadLine()?.ToLower();
 
                         if (confirm == "y")
