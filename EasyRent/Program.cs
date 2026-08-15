@@ -44,35 +44,51 @@ while (true)
 =-=-=-=-=-=-= CLIENT MENU =-=-=-=-=-=-=
 ");
             Console.WriteLine("\n[1] Register client" +
-                              "\n[2] Update client age" +
-                              "\n[3] Delete client" +
-                              "\n[4] Find client" +
-                              "\n[5] List clients" +
-                              "\n[0] Return to main menu\n");
+                  "\n[2] Update client name" +
+                  "\n[3] Delete client" +
+                  "\n[4] Find client" +
+                  "\n[5] List clients" +
+                  "\n[0] Return to main menu\n");
+
             menuOption = RentalService.ReadMenuOption(5);
+
             switch (menuOption)
             {
                 case 1: // Registering a client
                     Console.Write("\nEnter client name: ");
-                    string? name = Console.ReadLine();
+                    string name = Console.ReadLine()!;
+
                     Console.Write("\nEnter client CPF: ");
-                    string? cpf = Console.ReadLine();
+                    string cpf = Console.ReadLine()!;
+
                     Console.Write("\nEnter client CNH: ");
-                    string? cnh = Console.ReadLine();
-                    Console.Write("\nEnter client age: ");
-                    int age = Convert.ToInt32(Console.ReadLine());
-                    Client client = new Client(name, cpf, cnh, age);// register client
-                    rentalService.Clients.Add(client); // add client to the program client list
+                    string cnh = Console.ReadLine()!;
+
+                    Console.Write("\nEnter client birth date [YYYY-MM-DD]: ");
+                    DateTime birthDate = DateTime.Parse(Console.ReadLine()!);
+
+                    Client client = new Client(name, cpf, cnh, birthDate);
+
+                    rentalService.Clients.Add(client);
+
+                    Console.WriteLine("\nClient registered successfully.");
                     break;
-                case 2: // Uptading client age
+
+                case 2: // Updating client name
                     Client? clientToUpdate = rentalService.SearchClient();
 
                     if (clientToUpdate != null)
                     {
                         Console.WriteLine(clientToUpdate.ShowClient());
-                        Console.Write("\nEnter new client age to update: ");
-                        clientToUpdate.Age = Convert.ToInt32(Console.ReadLine());
+
+                        Console.Write("\nEnter new client name: ");
+                        string newName = Console.ReadLine()!;
+
+                        clientToUpdate.Name = newName;
+
+                        Console.WriteLine("\nClient name updated successfully.");
                     }
+
                     break;
                 case 3: // Deleting client register
                     Client? clientToDelete = rentalService.SearchClient();
@@ -304,3 +320,5 @@ while (true)
             break;
     }
 }
+
+

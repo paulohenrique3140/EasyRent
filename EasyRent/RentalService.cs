@@ -1,13 +1,15 @@
-﻿class RentalService
+﻿using System.ComponentModel;
+
+class RentalService
 {
     public List<Client> Clients { get; } = new List<Client>();
     public List<Vehicle> Vehicles { get; } = new List<Vehicle>();
     public List<Rental> Rentals { get; } = new List<Rental>();
-    
+
 
     public void ShowClientList()
     {
-        foreach(var client in Clients)
+        foreach (var client in Clients)
         {
             Console.WriteLine(client.ShowClient());
         }
@@ -24,7 +26,7 @@
 
     public void ShowRents()
     {
-        foreach(var rent in Rentals)
+        foreach (var rent in Rentals)
         {
             Console.WriteLine(rent.ShowSummary(rent.Vehicle.CurrentMileage));
         }
@@ -53,51 +55,101 @@
         }
     }
 
-    public Client? FindClient(string? cpf)
+    public List<Client> FindClientsByName(string? name)
     {
-        return Clients.FirstOrDefault(client => client.Cpf == cpf);
+        if (string.IsNullOrWhiteSpace(name))
+            return new List<Client>();
+
+        return Clients.Where(client => client.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
     public Client? SearchClient()
     {
         while (true)
         {
-            Console.Write("\nEnter the client CPF [type r to return]: ");
-            string? cpfSearch = Console.ReadLine();
+            Console.Write("\nEnter the client name [type r to return]: ");
+            string? nameSearch = Console.ReadLine();
 
-            if (cpfSearch?.ToLower() == "r")
+            if (nameSearch?.ToLower() == "r")
                 return null;
 
-            Client? clientFound = FindClient(cpfSearch);
+            List<Client> clientsFound = FindClientsByName(nameSearch);
 
-            if(clientFound != null)
-                return clientFound;
+            if (clientsFound.Count == 0)
+            {
+                Console.WriteLine("\nNo clients were found. Please try again.");
+                continue;
+            }
 
-            Console.WriteLine("\nThere's no client with this CPF. Please try again.");
+            if (clientsFound.Count == 1)
+            {
+                return clientsFound[0];
+            }
+
+            Console.WriteLine("\nClients found:");
+
+            for (int i = 0; i < clientsFound.Count; i++)
+            {
+                Console.WriteLine($"[{i + 1}] {clientsFound[i].Name} - CPF: {clientsFound[i].Cpf}");
+            }
+
+            Console.WriteLine("\nSelect a client: ");
+
+            if (int.TryParse(Console.ReadLine(), out int option) && option >= 1 && option <= clientsFound.Count)
+            {
+                return clientsFound[option - 1];
+            }
+
+            Console.WriteLine("\nInvalid option. Please try again.");
         }
     }
 
-    public Vehicle? FindVehicle(string? licencePlate)
+    public List<Vehicle> FindVehicleByModel(string? model)
     {
-        return Vehicles.FirstOrDefault(vehicle => vehicle.LicencePlate == licencePlate);
+        if (string.IsNullOrWhiteSpace(model))
+            return new List<Vehicle>();
+
+        return Vehicles.Where(vehicle => vehicle.Model.Contains(model, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
     public Vehicle? SearchVehicle()
     {
         while (true)
         {
-            Console.Write("\nEnter the car licence plate [type r to return]: ");
-            string? licensePlateSearch = Console.ReadLine();
+            Console.Write("\nEnter the car model [type r to return]: ");
+            string? modelSearch = Console.ReadLine();
 
-            if (licensePlateSearch?.ToLower() == "r")
+            if (modelSearch?.ToLower() == "r")
                 return null;
 
-            Vehicle? vehicleFound = FindVehicle(licensePlateSearch);
+            List<Vehicle> vehiclesFound = FindVehicleByModel(modelSearch);
 
-            if (vehicleFound != null)
-                return vehicleFound;
+            if (vehiclesFound.Count == 0)
+            {
+                Console.WriteLine("\nNo vehicle were found. Please try again.");
+                continue;
+            }
 
-            Console.WriteLine("\nThere's no car with this license plate. Please try again.");
+            if (vehiclesFound.Count == 1)
+            {
+                return vehiclesFound[0];
+            }
+
+            Console.WriteLine("\nVehicles found:");
+
+            for (int i = 0; i < vehiclesFound.Count; i++)
+            {
+                Console.WriteLine($"[{i + 1}] {vehiclesFound[i].Model} - License plate: {vehiclesFound[i].LicencePlate}");
+            }
+
+            Console.WriteLine("\nSelect a car: ");
+
+            if (int.TryParse(Console.ReadLine(), out int option) && option >= 1 && option <= vehiclesFound.Count)
+            {
+                return vehiclesFound[option - 1];
+            }
+            Console.WriteLine("\nInvalid option. Please try again.");
+
         }
     }
 

@@ -1,109 +1,148 @@
-﻿class Client
+﻿using System.Text.RegularExpressions;
+
+class Client
 {
     // Client properties
-    public string? Name { get; set; }
+    public string Name { get; set; }
+    public string Cnh { get; set; }
 
     // Private backing field for CPF
-    private string? cpf;
+    private string cpf = string.Empty;
 
-    // Property with validation and exception handling
-    public string? Cpf
+    // CPF property with validation
+    public string Cpf
     {
         get { return cpf; }
         set
         {
             if (!ValidateCpf(value))
-            {
-                throw new ArgumentException("Invalid CPF format or digits.");
-            }
+                throw new ArgumentException("Invalid CPF format or verification digits.");
+
             cpf = value;
         }
     }
-    public string? Cnh { get; set; }
-    private int age;
-    public int Age // legal age validation
-    {
-        get { return age; }
-        set
-        {
-            if (value < 18)
-            {
-                throw new ArgumentException("The client must be of legal driving age in the current country.");
-            }
-            else
-            {
-                age = value;
-            }
-        }
-    }
 
-    public Client(string name, string cpf, string cnh, int age) // client constructor
+    // Client birth date
+    public DateTime BirthDate { get; set; }
+
+    // Age is calculated dynamically from the birth date
+    public int Age => CalculateAge(BirthDate);
+
+    // Constructor used to create a complete Client object
+    public Client(string name, string cpf, string cnh, DateTime birthDate)
     {
         Name = name;
         Cpf = cpf;
         Cnh = cnh;
-        Age = age;
-    }
-    public Client(){} // Constructor to create an empty object
+        BirthDate = birthDate;
 
-    public static bool ValidateCpf(string? cpf) // Método estático responsável por calcular e validar os dígitos do CPF
+        if (Age < 18)
+            throw new ArgumentException(
+                "The client must be at least 18 years old."
+            );
+    }
+
+    // Empty constructor
+    public Client()
+    {
+        Name = string.Empty;
+        Cnh = string.Empty;
+    }
+
+    // Validates the CPF format and verification digits
+    public static bool ValidateCpf(string? cpf)
     {
         if (string.IsNullOrWhiteSpace(cpf))
             return false;
 
-        // 1. Remove qualquer caractere que não seja número (pontos e hífen)
-        string cleanedCpf = new string(cpf.Where(char.IsDigit).ToArray());
-
-        // 2. Deve possuir exatamente 11 dígitos
-        if (cleanedCpf.Length != 11)
+        if (!IsCpfFormatValid(cpf))
             return false;
 
-        // 3. Rejeita CPF com todos os números iguais (ex: 111.111.111-11)
+        // Removes punctuation and keeps only numeric characters
+        string cleanedCpf = new string(
+            cpf.Where(char.IsDigit).ToArray()
+        );
+
+        // Rejects CPFs containing the same digit in all positions
         if (cleanedCpf.All(c => c == cleanedCpf[0]))
             return false;
 
-        // 4. Validação do 1º Dígito Verificador
-        int[] multiplier1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+        // Calculates the first verification digit
         int sum = 0;
+        int multiplier = 10;
 
         for (int i = 0; i < 9; i++)
         {
-            sum += (cleanedCpf[i] - '0') * multiplier1[i];
+            int digit = cleanedCpf[i] - '0';
+
+            sum += digit * multiplier;
+            multiplier--;
         }
 
         int remainder = sum % 11;
-        int digit1 = remainder < 2 ? 0 : 11 - remainder;
 
-        if ((cleanedCpf[9] - '0') != digit1)
+        int firstVerificationDigit =
+            remainder < 2 ? 0 : 11 - remainder;
+
+        if ((cleanedCpf[9] - '0') != firstVerificationDigit)
             return false;
 
-        // 5. Validação do 2º Dígito Verificador
-        int[] multiplier2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+        // Calculates the second verification digit
         sum = 0;
+        multiplier = 11;
 
         for (int i = 0; i < 10; i++)
         {
-            sum += (cleanedCpf[i] - '0') * multiplier2[i];
+            int digit = cleanedCpf[i] - '0';
+
+            sum += digit * multiplier;
+            multiplier--;
         }
 
         remainder = sum % 11;
-        int digit2 = remainder < 2 ? 0 : 11 - remainder;
 
-        return (cleanedCpf[10] - '0') == digit2;
+        int secondVerificationDigit =
+            remainder < 2 ? 0 : 11 - remainder;
+
+        return (cleanedCpf[10] - '0') == secondVerificationDigit;
     }
 
-    public static int CalculateAge(DateTime birthDate) // method to calculate age by birth date
+    // Validates whether the CPF follows one of the accepted formats
+    private static bool IsCpfFormatValid(string cpf)
     {
-        DateOnly birth = new DateOnly(birthDate.Year, birthDate.Month, birthDate.Day);
+        Regex regex = new Regex(
+            @"^([0-9]{11}|[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2})$"
+        );
+
+        return regex.IsMatch(cpf);
+    }
+
+    // Calculates the client's age based on the birth date
+    public static int CalculateAge(DateTime birthDate)
+    {
+        DateOnly birth = new DateOnly(
+            birthDate.Year,
+            birthDate.Month,
+            birthDate.Day
+        );
+
         DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+
         int age = today.Year - birth.Year;
+
         if (today < birth.AddYears(age))
-        {
             age--;
-        }
+
         return age;
     }
 
-    public string ShowClient() => $"\nName: {Name}\nCPF: {Cpf}\nCNH: {Cnh}\nAge: {age}"; // method to return a client object
-    
+    // Returns the client's information
+    public string ShowClient()
+    {
+        return $"\nName: {Name}" +
+               $"\nCPF: {Cpf}" +
+               $"\nCNH: {Cnh}" +
+               $"\nBirth Date: {BirthDate:dd/MM/yyyy}" +
+               $"\nAge: {Age}";
+    }
 }
