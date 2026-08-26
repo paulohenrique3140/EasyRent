@@ -238,7 +238,7 @@ while (true)
                         Console.WriteLine(clientToRent.ShowClient());
                         Console.WriteLine("\n-=-=- Car available list -=-=-");
                         rentalService.ShowVehicleList();
-                        Console.Write("\nChoose one car to rental");
+                        Console.Write("\nChoose a car to rental");
                         Vehicle? vehicleToRent = rentalService.SearchVehicle();
                         if (vehicleToRent != null)
                         {
