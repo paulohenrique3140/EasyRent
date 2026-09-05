@@ -1,4 +1,4 @@
-﻿enum CarBody
+﻿public enum CarBody
 {
     Hatch = 1,
     Sedan,
@@ -6,7 +6,7 @@
     Utilitario
 }
 
-enum RentStatus
+public enum RentStatus
 {
     Open = 1,
     Finished,

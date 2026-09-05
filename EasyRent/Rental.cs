@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-class Rental
+public class Rental
 {
-    // rental properties
+    // Properties
     public Client? Client { get; }
     public Vehicle? Vehicle { get; }
     private int rentalDays;
@@ -11,7 +11,7 @@ class Rental
         get { return rentalDays; }
         set
         {
-            while (value <= 0)
+            while (value <= 0) // Validation
             {
                 throw new ArgumentException("It's not possible conclude your reservation with 0 dailys");
             }
@@ -22,7 +22,8 @@ class Rental
     public int InicialMileage { get; private set; }
     public RentStatus Status { get; private set; }
 
-    public Rental(Client client, Vehicle vehicle, int rentalDays, bool hasInsurance, int currentMileage, RentStatus status) // rental constructor
+    // Constructors
+    public Rental(Client client, Vehicle vehicle, int rentalDays, bool hasInsurance, int currentMileage, RentStatus status) 
     {
         Client = client;
         Vehicle = vehicle;
@@ -32,20 +33,21 @@ class Rental
         Status = status;
     }
 
-    public Rental() { } // Constructor to create an empty object
+    public Rental() { }
 
-    public double CalculateBaseValue(double daily) // Method to calculate the rental base value
+    // Methods
+    public double CalculateBaseValue(double daily)
     {
         double total = RentalDays * daily;
         return total;
     }
 
-    public double CalculateInsurance() // Method to validate the insurance of the rental
+    public double CalculateInsurance()
     {
         return HasInsurance ? RentalDays * 50.00 : 0;
     }
 
-    public double CalculatePenalty(int currentMileage) // Method to calculate penality
+    public double CalculatePenalty(int currentMileage)
     {
         double penalty = 0;
         int totalMileage = currentMileage - InicialMileage;
@@ -56,12 +58,12 @@ class Rental
         return penalty;
     }
 
-    public double CalculateTotal(double daily, int currentMileage) // Method to calculate total value
+    public double CalculateTotal(double daily, int currentMileage)
     {
         return CalculateBaseValue(daily) + CalculateInsurance() + CalculatePenalty(currentMileage);
     }
 
-    public bool CloseRental(int endingMileage) // Method to close the rental
+    public bool CloseRental(int endingMileage)
     {
         if (endingMileage >= Vehicle.CurrentMileage)
         {
@@ -71,16 +73,16 @@ class Rental
         }
         return false;
     }
-    public void CancelRental() // Method to cancel the rental
+    public void CancelRental()
     {
         Status = RentStatus.Canceled;
     }
 
-    public string ShowOpenRental() // Showing open rental details
+    public string ShowOpenRental()
     {
         StringBuilder sb = new StringBuilder();
         sb.Append($"\n### RENTAL SUMMARY ###\n" +
-                          $"\nClient: {Client.Name}" +
+                          $"\nClient ID: {Client.Id}" +
                           $"\nVehicle: {Vehicle.Model}" +
                           $"\nRental days: {RentalDays}" +
                           $"\nDaily rate: $ {Vehicle.DailyRate:F2}" +
@@ -89,7 +91,7 @@ class Rental
         return sb.ToString();
     }
 
-    public string ShowSummary(int currentMileage) // Showing rental summary
+    public string ShowSummary(int currentMileage)
     {
         StringBuilder sb = new StringBuilder();
         if (Status == RentStatus.Canceled)

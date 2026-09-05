@@ -1,4 +1,4 @@
-﻿class Vehicle
+﻿public class Vehicle
 {
     // vehicle properties
     public string? Model { get; set; }
