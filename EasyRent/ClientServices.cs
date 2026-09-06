@@ -13,52 +13,33 @@
 
     }
 
-    public List<Client> FindClientsByEmail(string? email)
+    /*public List<Client> FindClientsByEmail(string? email)
     {
         if (string.IsNullOrWhiteSpace(email))
             return new List<Client>();
 
         return Clients.Where(client => client.Email.Contains(email, StringComparison.OrdinalIgnoreCase)).ToList();
-    }
+    }*/
 
     public Client? SearchClient()
     {
         while (true)
         {
+            ClientRepository repository = new ClientRepository();
             Console.Write("\nEnter the client email [type r to return]: ");
             string? emailSearch = Console.ReadLine();
 
             if (emailSearch?.ToLower() == "r")
                 return null;
 
-            List<Client> clientsFound = FindClientsByEmail(emailSearch);
-
-            if (clientsFound.Count == 0)
+            if (repository.GetClientByEmail(emailSearch) == null)
             {
-                Console.WriteLine("\nNo clients were found. Please try again.");
-                continue;
+                Console.WriteLine("\nThere's no client with this email.");
             }
-
-            if (clientsFound.Count == 1)
+            else
             {
-                return clientsFound[0];
+                Console.WriteLine(repository.GetClientByEmail(emailSearch).ShowClient());
             }
-
-            Console.WriteLine("\nClients found:");
-
-            for (int i = 0; i < clientsFound.Count; i++)
-            {
-                Console.WriteLine($"[{i + 1}] {clientsFound[i].Email} - ID: {clientsFound[i].Id}");
-            }
-
-            Console.WriteLine("\nSelect a client: ");
-
-            if (int.TryParse(Console.ReadLine(), out int option) && option >= 1 && option <= clientsFound.Count)
-            {
-                return clientsFound[option - 1];
-            }
-
-            Console.WriteLine("\nInvalid option. Please try again.");
         }
     }
 }

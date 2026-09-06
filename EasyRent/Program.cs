@@ -2,6 +2,7 @@
 RentalServices rentalServices = new RentalServices();
 ClientServices clientServices = new ClientServices();
 VehicleServices vehicleServices = new VehicleServices();
+ClientRepository clientRepository = new ClientRepository();
 
 // Main loop
 while (true) 
@@ -74,7 +75,7 @@ while (true)
                         Console.Write("\nEnter client birth date [YYYY-MM-DD]: ");
                         DateTime birthDate = DateTime.Parse(Console.ReadLine()!);
                         Client client = new PersonalCustomer(email, phone, name, cpf, cnh, birthDate);
-                        clientServices.Clients.Add(client);
+                        clientRepository.AddClient(client);
                         Console.WriteLine("\nClient registered successfully.");
                     }
                     else
@@ -86,7 +87,7 @@ while (true)
                         Console.Write("\nEnter opening company date: [YYYY-MM-DD]: ");
                         DateTime openingdate = DateTime.Parse(Console.ReadLine()!);
                         Client client = new BusinessCustomer(email, phone, companyName, cnpj, openingdate);
-                        clientServices.Clients.Add(client);
+                        clientRepository.AddClient(client);
                         Console.WriteLine("\nClient registered successfully.");
                     }
                     break;
