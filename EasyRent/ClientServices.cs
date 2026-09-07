@@ -6,20 +6,13 @@
     // Methods
     public void ShowClientList()
     {
-        foreach (var client in Clients)
+        ClientRepository rerpository = new ClientRepository();
+
+        foreach(var client in rerpository.GetAllClients())
         {
             Console.WriteLine(client.ShowClient());
         }
-
     }
-
-    /*public List<Client> FindClientsByEmail(string? email)
-    {
-        if (string.IsNullOrWhiteSpace(email))
-            return new List<Client>();
-
-        return Clients.Where(client => client.Email.Contains(email, StringComparison.OrdinalIgnoreCase)).ToList();
-    }*/
 
     public Client? SearchClient()
     {
@@ -32,14 +25,15 @@
             if (emailSearch?.ToLower() == "r")
                 return null;
 
-            if (repository.GetClientByEmail(emailSearch) == null)
+            Client? client = repository.GetClientByEmail(emailSearch);
+
+            if (client == null)
             {
                 Console.WriteLine("\nThere's no client with this email.");
+                continue;
             }
-            else
-            {
-                Console.WriteLine(repository.GetClientByEmail(emailSearch).ShowClient());
-            }
+            
+            return client;
         }
     }
 }

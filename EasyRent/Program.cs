@@ -60,6 +60,10 @@ while (true)
                 case 1:
                     Console.WriteLine("\n[1] Personal customer\n[2] Business customer\n[0] Return to main menu\n");
                     menuOption = ReadMenuOption(2);
+                    if (menuOption == 0)
+                    {
+                        break;
+                    }
                     Console.Write("\nEnter client email: ");
                     string email = Console.ReadLine()!;
                     Console.Write("\nEnter client phone number: ");
@@ -74,7 +78,14 @@ while (true)
                         string cnh = Console.ReadLine()!;
                         Console.Write("\nEnter client birth date [YYYY-MM-DD]: ");
                         DateTime birthDate = DateTime.Parse(Console.ReadLine()!);
-                        Client client = new PersonalCustomer(email, phone, name, cpf, cnh, birthDate);
+                        Console.Write("\nThe client's a rideshare driver? [y/n]: ");
+                        string rd = Console.ReadLine().ToLower();
+                        bool rideshareDriver = false;
+                        if (rd == "y")
+                        {
+                            rideshareDriver = true;
+                        }
+                        Client client = new PersonalCustomer(email, phone, name, cpf, cnh, birthDate, rideshareDriver);
                         clientRepository.AddClient(client);
                         Console.WriteLine("\nClient registered successfully.");
                     }
@@ -89,7 +100,7 @@ while (true)
                         Client client = new BusinessCustomer(email, phone, companyName, cnpj, openingdate);
                         clientRepository.AddClient(client);
                         Console.WriteLine("\nClient registered successfully.");
-                    }
+                    } 
                     break;
 
                 case 2:
@@ -358,7 +369,6 @@ static int ReadMenuOption(int opcaoMaxima)
             Console.WriteLine("\nInvalid option! Please enter one of the listed options.");
             continue;
         }
-
         return opcao;
     }
 }

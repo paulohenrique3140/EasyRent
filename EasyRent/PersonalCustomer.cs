@@ -22,14 +22,16 @@ public class PersonalCustomer : Client
     }
 
     public DateTime BirthDate { get; set; }
+    public bool RideshareDriver { get; set; }
 
     // Constructor
-    public PersonalCustomer(string? email, string? phone, string name, string cpf, string cnh, DateTime birthDate) : base(email, phone)
+    public PersonalCustomer(string? email, string? phone, string name, string cpf, string cnh, DateTime birthDate, bool rideshareDriver) : base(email, phone)
     {
         Name = name;
         Cpf = cpf;
         Cnh = cnh;
         BirthDate = birthDate;
+        RideshareDriver = rideshareDriver;
 
         if (CalculateAge(birthDate) < 18)
             throw new ArgumentException(

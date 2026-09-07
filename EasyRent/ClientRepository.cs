@@ -1,8 +1,4 @@
 ﻿using Microsoft.Data.SqlClient;
-using System.ComponentModel.DataAnnotations;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-
 public class ClientRepository
 {
     private readonly string connectionString = "Server=PAULO;DataBase=EASY_RENT;Integrated Security=True;TrustServerCertificate=True;";
@@ -29,9 +25,9 @@ public class ClientRepository
         {
             string sqlPersonalCustomer = @"
                 INSERT INTO PERSONAL_CUSTOMER
-                    (ClientId, Name, Cpf, Cnh, Birth_Date)
+                    (ClientId, Name, CPF, CNH, Birth_Date, Rideshare_Driver)
                 VALUES
-                    (@ClientId, @Name, @Cpf, @Cnh, @Birth_Date);";
+                    (@ClientId, @Name, @Cpf, @Cnh, @Birth_Date, @Rideshare_Driver);";
 
             using SqlCommand commandPersonal = new SqlCommand(sqlPersonalCustomer, connection);
 
@@ -40,6 +36,7 @@ public class ClientRepository
             commandPersonal.Parameters.AddWithValue("@Cpf", personalCustomer.Cpf);
             commandPersonal.Parameters.AddWithValue("@Cnh", personalCustomer.Cnh);
             commandPersonal.Parameters.AddWithValue("@Birth_Date", personalCustomer.BirthDate);
+            commandPersonal.Parameters.AddWithValue("@Rideshare_Driver", personalCustomer.RideshareDriver);
 
             commandPersonal.ExecuteNonQuery();
         }
@@ -47,7 +44,7 @@ public class ClientRepository
         {
             string sqlBusinessCustomer = @"
                 INSERT INTO BUSINESS_CUSTOMER
-                    (ClientId, Company_Name, Cnpj, Opening_Date)
+                    (ClientId, Company_Name, CNPJ, Opening_Date)
                 VALUES
                     (@ClientId, @Company_Name, @Cnpj, @Opening_Date);";
 
@@ -72,7 +69,7 @@ public class ClientRepository
         using SqlCommand getCommand = new SqlCommand(sqlGetCommand, connection);
         getCommand.Parameters.AddWithValue("@email", email);
         SqlDataReader reader = getCommand.ExecuteReader();
-        
+
         if (!reader.Read())
         {
             return null;
@@ -94,8 +91,8 @@ public class ClientRepository
             pc.Email = findEmail;
             pc.Phone = phone;
             pc.Name = reader["Name"].ToString();
-            pc.Cnh = reader["Cnh"].ToString();
-            pc.Cpf = reader["Cpf"].ToString();
+            pc.Cnh = reader["CNH"].ToString();
+            pc.Cpf = reader["CPF"].ToString();
             pc.BirthDate = (DateTime)reader["Birth_Date"];
 
             return pc;
@@ -107,7 +104,7 @@ public class ClientRepository
         using SqlCommand bcClientCommand = new SqlCommand(bcCommand, connection);
         bcClientCommand.Parameters.AddWithValue("@Id", id);
         reader = bcClientCommand.ExecuteReader();
-        
+
         if (reader.Read())
         {
             BusinessCustomer bc = new BusinessCustomer();
@@ -115,7 +112,7 @@ public class ClientRepository
             bc.Email = findEmail;
             bc.Phone = phone;
             bc.CompanyName = reader["Company_Name"].ToString();
-            bc.Cnpj = reader["Cnpj"].ToString();
+            bc.Cnpj = reader["CNPJ"].ToString();
             bc.OpeningDate = (DateTime)reader["Opening_Date"];
 
             return bc;
@@ -123,5 +120,76 @@ public class ClientRepository
         reader.Close();
 
         return null;
+    }
+
+    public List<Client>? GetAllClients()
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        string sqlGetCommand = @"
+            SELECT * FROM CLIENT;
+        ";
+        string email = string.Empty;
+        string phone = string.Empty;
+        int id = 0;
+        List<Client> clients = new List<Client>();
+        using SqlCommand getCommand = new SqlCommand(sqlGetCommand, connection);
+        SqlDataReader reader = getCommand.ExecuteReader();
+        while (reader.Read())
+        {
+            id = Convert.ToInt32(reader["Id"]);
+            email = (string?)reader["Email"];
+            phone = (string?)reader["Phone"];
+
+            using SqlConnection connection2 = new SqlConnection(connectionString);
+            connection2.Open();
+            string sqlGetCommand2 = @"
+            SELECT * FROM PERSONAL_CUSTOMER
+            WHERE ClientId = @Id";
+            using SqlCommand getCommand2 = new SqlCommand(sqlGetCommand2, connection2);
+            getCommand2.Parameters.AddWithValue("Id", id);
+            SqlDataReader reader2 = getCommand2.ExecuteReader();
+            if (reader2.Read())
+            {
+                PersonalCustomer pc = new PersonalCustomer();
+                pc.Id = id;
+                pc.Email = email;
+                pc.Phone = phone;
+                pc.Name = reader2["Name"].ToString();
+                pc.Cnh = reader2["CNH"].ToString();
+                pc.Cpf = reader2["CPF"].ToString();
+                pc.BirthDate = (DateTime)reader2["Birth_Date"];
+                pc.RideshareDriver = Convert.ToBoolean(reader2["Rideshare_Driver"]);
+                clients.Add(pc);
+            }
+            reader2.Close();
+            connection2.Close();
+
+            using SqlConnection connection3 = new SqlConnection(connectionString);
+            connection3.Open();
+            string sqlGetCommand3 = @"
+            SELECT * FROM BUSINESS_CUSTOMER
+            WHERE ClientId = @Id";
+            using SqlCommand getCommand3 = new SqlCommand(sqlGetCommand3, connection3);
+            getCommand3.Parameters.AddWithValue("Id", id);
+            SqlDataReader reader3 = getCommand3.ExecuteReader();
+            if (reader3.Read())
+            {
+                BusinessCustomer bc = new BusinessCustomer();
+                bc.Id = id;
+                bc.Email = email;
+                bc.Phone = phone;
+                bc.CompanyName = reader3["Company_Name"].ToString();
+                bc.Cnpj = reader3["CNPJ"].ToString();
+                bc.OpeningDate = (DateTime)reader3["Opening_Date"];
+                clients.Add(bc);
+            }
+            reader3.Close();
+            connection3.Close();
+        }
+        reader.Close();
+        connection.Close();
+        return clients;
     }
 }
