@@ -1,4 +1,5 @@
-﻿public class VehicleServices
+﻿
+public class VehicleServices
 {
     // Properties
     public List<Vehicle> Vehicles { get; } = new List<Vehicle>();

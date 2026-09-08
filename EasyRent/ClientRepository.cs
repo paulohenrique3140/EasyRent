@@ -192,4 +192,58 @@ public class ClientRepository
         connection.Close();
         return clients;
     }
+
+    public void UpdateClientEmail(string? email, string? newEmail)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+        string sqlCommand = @"
+           UPDATE CLIENT
+           SET EMAIL = @newEmail
+           WHERE Email = @email
+        ";
+
+        using SqlCommand command = new SqlCommand(sqlCommand, connection);
+        command.Parameters.AddWithValue("@newEmail", newEmail);
+        command.Parameters.AddWithValue("@email", email);
+        command.ExecuteNonQuery();
+        connection.Close();
+    }
+
+    public void DeleteClient(Client client)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+
+        if (client is PersonalCustomer)
+        {
+            string sqlDeleteCommand = @"
+                    DELETE FROM PERSONAL_CUSTOMER
+                    WHERE ClientId = @Id";
+
+            SqlCommand deleteCommand = new SqlCommand(sqlDeleteCommand, connection);
+            deleteCommand.Parameters.AddWithValue("@Id", client.Id);
+            deleteCommand.ExecuteNonQuery();
+        }
+        else
+        {
+            string sqlDeleteCommand2 = @"
+                    DELETE FROM BUSINESS_CUSTOMER
+                    WHERE ClientId = @Id";
+
+            SqlCommand deleteCommand2 = new SqlCommand(sqlDeleteCommand2, connection);
+            deleteCommand2.Parameters.AddWithValue("@Id", client.Id);
+            deleteCommand2.ExecuteNonQuery();
+        }
+
+        string sqlCommand = @"
+            DELETE FROM CLIENT
+            WHERE Id = @Id";
+
+        SqlCommand command = new SqlCommand(sqlCommand, connection);
+        command.Parameters.AddWithValue("@Id", client.Id);
+        command.ExecuteNonQuery();
+        connection.Close();
+    }
 }

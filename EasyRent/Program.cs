@@ -5,7 +5,7 @@ VehicleServices vehicleServices = new VehicleServices();
 ClientRepository clientRepository = new ClientRepository();
 
 // Main loop
-while (true) 
+while (true)
 {
     // Main menu
     Console.Clear();
@@ -100,45 +100,40 @@ while (true)
                         Client client = new BusinessCustomer(email, phone, companyName, cnpj, openingdate);
                         clientRepository.AddClient(client);
                         Console.WriteLine("\nClient registered successfully.");
-                    } 
+                    }
                     break;
 
                 case 2:
-                    Client? clientToUpdate = clientServices.SearchClient();
+                    Client? clientToUpdate = ReadClient();
 
                     if (clientToUpdate != null)
                     {
                         Console.WriteLine(clientToUpdate.ShowClient());
-
                         Console.Write("\nEnter new client email: ");
                         string newEmail = Console.ReadLine()!;
-
-                        clientToUpdate.Email = newEmail;
-
-                        Console.WriteLine("\nClient name updated successfully.");
+                        clientServices.UpdateClientEmail(clientToUpdate, newEmail);
+                        Console.WriteLine("\nClient email updated successfully.");
                     }
-
                     break;
                 case 3:
-                    Client? clientToDelete = clientServices.SearchClient();
+                    Client? clientToDelete = ReadClient();
 
-                    if (clientToDelete != null)
+                    if(clientToDelete != null)
                     {
                         Console.WriteLine(clientToDelete.ShowClient());
 
                         Console.Write("\nConfirm client deletion? [y/n]: ");
                         string? confirm = Console.ReadLine()?.ToLower();
-
                         if (confirm == "y")
                         {
-                            clientServices.Clients.Remove(clientToDelete);
+                            clientServices.DeleteClient(clientToDelete);
                         }
                     }
                     break;
                 case 4:
-                    Client? clientFound = clientServices.SearchClient();
+                    Client? clientFound = ReadClient();
 
-                    if (clientFound != null)
+                    if(clientFound != null)
                     {
                         Console.WriteLine(clientFound.ShowClient());
                         Console.ReadKey();
@@ -187,8 +182,8 @@ while (true)
                     double dailyRate = Convert.ToDouble(Console.ReadLine());
                     Console.Write("\nEnter car current mileage [km]: ");
                     int currentMileage = Convert.ToInt32(Console.ReadLine());
-                    Vehicle vehicle = new Vehicle(model, licensePlate, (CarBody)carBody, dailyRate, currentMileage); 
-                    vehicleServices.Vehicles.Add(vehicle); 
+                    Vehicle vehicle = new Vehicle(model, licensePlate, (CarBody)carBody, dailyRate, currentMileage);
+                    vehicleServices.Vehicles.Add(vehicle);
                     break;
                 case 2:
                     Vehicle? vehicleToUpdate = vehicleServices.SearchVehicle();
@@ -261,7 +256,7 @@ while (true)
             switch (menuOption)
             {
                 case 1:
-                    Client? clientToRent = clientServices.SearchClient();
+                    Client? clientToRent = ReadClient();
                     if (clientToRent != null)
                     {
                         Console.WriteLine(clientToRent.ShowClient());
@@ -286,12 +281,12 @@ while (true)
                     }
                     break;
                 case 2:
-                    foreach(Rental rental in rentalServices.FindOpenRentals())
+                    foreach (Rental rental in rentalServices.FindOpenRentals())
                     {
                         Console.WriteLine(rental.ShowOpenRental());
                     }
                     Rental? rentalToClose = rentalServices.SearchRentalToClose();
-                    if(rentalToClose == null)
+                    if (rentalToClose == null)
                     {
                         break;
                     }
@@ -318,8 +313,8 @@ while (true)
                     Console.ReadKey();
                     break;
                 case 4:
-                    Client? clientToListRentals = clientServices.SearchClient();
-                    if(clientToListRentals == null)
+                    Client? clientToListRentals = ReadClient();
+                    if (clientToListRentals == null)
                     {
                         break;
                     }
@@ -332,7 +327,7 @@ while (true)
                     break;
                 case 5:
                     Vehicle? vehicleToListRentals = vehicleServices.SearchVehicle();
-                    if(vehicleToListRentals == null)
+                    if (vehicleToListRentals == null)
                     {
                         break;
                     }
@@ -370,6 +365,28 @@ static int ReadMenuOption(int opcaoMaxima)
             continue;
         }
         return opcao;
+    }
+}
+
+static Client? ReadClient()
+{
+    while (true)
+    {
+        ClientServices clientServices = new ClientServices();
+        Console.Write("\nEnter the client email [type r to return]: ");
+        string? emailSearch = Console.ReadLine();
+
+        if (emailSearch?.ToLower() == "r")
+            return null;
+
+        Client? client = clientServices.SearchClient(emailSearch);
+
+        if (client == null)
+        {
+            Console.WriteLine("\nThere's no client with this email.");
+            continue;
+        }
+        return client;
     }
 }
 

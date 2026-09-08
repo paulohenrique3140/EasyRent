@@ -8,32 +8,28 @@
     {
         ClientRepository rerpository = new ClientRepository();
 
-        foreach(var client in rerpository.GetAllClients())
+        foreach (var client in rerpository.GetAllClients())
         {
             Console.WriteLine(client.ShowClient());
         }
     }
 
-    public Client? SearchClient()
+    public Client? SearchClient(string? emailSearch)
     {
-        while (true)
-        {
-            ClientRepository repository = new ClientRepository();
-            Console.Write("\nEnter the client email [type r to return]: ");
-            string? emailSearch = Console.ReadLine();
+        ClientRepository repository = new ClientRepository();
+        Client? client = repository.GetClientByEmail(emailSearch);
+        return client;
+    }
 
-            if (emailSearch?.ToLower() == "r")
-                return null;
+    public void UpdateClientEmail(Client client, string? newEmail)
+    {
+        ClientRepository repository = new ClientRepository();
+        repository.UpdateClientEmail(client.Email, newEmail);
+    }
 
-            Client? client = repository.GetClientByEmail(emailSearch);
-
-            if (client == null)
-            {
-                Console.WriteLine("\nThere's no client with this email.");
-                continue;
-            }
-            
-            return client;
-        }
+    public void DeleteClient(Client client)
+    {
+        ClientRepository repository = new ClientRepository();
+        repository.DeleteClient(client);
     }
 }
