@@ -3,8 +3,13 @@ public class VehicleServices
 {
     // Properties
     public List<Vehicle> Vehicles { get; } = new List<Vehicle>();
+    VehicleRepository repository = new VehicleRepository();
 
     // Methods
+    public void CreateVehicle(Vehicle vehicle)
+    {
+        repository.AddVehicle(vehicle);
+    }
     public void ShowVehicleList()
     {
         foreach (var vehicle in Vehicles)

@@ -1,14 +1,16 @@
 ﻿public class ClientServices
 {
     // Properties
-    public List<Client> Clients { get; } = new List<Client>();
+    ClientRepository clientRepository = new ClientRepository();
 
     // Methods
+    public void CreateClient(Client? client)
+    {
+        clientRepository.AddClient(client);
+    }
     public void ShowClientList()
     {
-        ClientRepository rerpository = new ClientRepository();
-
-        foreach (var client in rerpository.GetAllClients())
+        foreach (var client in clientRepository.GetAllClients())
         {
             Console.WriteLine(client.ShowClient());
         }
@@ -16,20 +18,17 @@
 
     public Client? SearchClient(string? emailSearch)
     {
-        ClientRepository repository = new ClientRepository();
-        Client? client = repository.GetClientByEmail(emailSearch);
+        Client? client = clientRepository.GetClientByEmail(emailSearch);
         return client;
     }
 
     public void UpdateClientEmail(Client client, string? newEmail)
     {
-        ClientRepository repository = new ClientRepository();
-        repository.UpdateClientEmail(client.Email, newEmail);
+        clientRepository.UpdateClientEmail(client.Email, newEmail);
     }
 
     public void DeleteClient(Client client)
     {
-        ClientRepository repository = new ClientRepository();
-        repository.DeleteClient(client);
+        clientRepository.DeleteClient(client);
     }
 }

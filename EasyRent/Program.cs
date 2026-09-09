@@ -64,8 +64,7 @@ while (true)
                     {
                         break;
                     }
-                    Console.Write("\nEnter client email: ");
-                    string email = Console.ReadLine()!;
+                    string email = CheckEmail();                    
                     Console.Write("\nEnter client phone number: ");
                     string phone = Console.ReadLine()!;
                     if (menuOption == 1)
@@ -86,7 +85,7 @@ while (true)
                             rideshareDriver = true;
                         }
                         Client client = new PersonalCustomer(email, phone, name, cpf, cnh, birthDate, rideshareDriver);
-                        clientRepository.AddClient(client);
+                        clientServices.CreateClient(client);
                         Console.WriteLine("\nClient registered successfully.");
                     }
                     else
@@ -98,9 +97,10 @@ while (true)
                         Console.Write("\nEnter opening company date: [YYYY-MM-DD]: ");
                         DateTime openingdate = DateTime.Parse(Console.ReadLine()!);
                         Client client = new BusinessCustomer(email, phone, companyName, cnpj, openingdate);
-                        clientRepository.AddClient(client);
+                        clientServices.CreateClient(client);
                         Console.WriteLine("\nClient registered successfully.");
                     }
+
                     break;
 
                 case 2:
@@ -109,8 +109,7 @@ while (true)
                     if (clientToUpdate != null)
                     {
                         Console.WriteLine(clientToUpdate.ShowClient());
-                        Console.Write("\nEnter new client email: ");
-                        string newEmail = Console.ReadLine()!;
+                        string newEmail = CheckEmail();
                         clientServices.UpdateClientEmail(clientToUpdate, newEmail);
                         Console.WriteLine("\nClient email updated successfully.");
                     }
@@ -118,7 +117,7 @@ while (true)
                 case 3:
                     Client? clientToDelete = ReadClient();
 
-                    if(clientToDelete != null)
+                    if (clientToDelete != null)
                     {
                         Console.WriteLine(clientToDelete.ShowClient());
 
@@ -133,7 +132,7 @@ while (true)
                 case 4:
                     Client? clientFound = ReadClient();
 
-                    if(clientFound != null)
+                    if (clientFound != null)
                     {
                         Console.WriteLine(clientFound.ShowClient());
                         Console.ReadKey();
@@ -183,7 +182,7 @@ while (true)
                     Console.Write("\nEnter car current mileage [km]: ");
                     int currentMileage = Convert.ToInt32(Console.ReadLine());
                     Vehicle vehicle = new Vehicle(model, licensePlate, (CarBody)carBody, dailyRate, currentMileage);
-                    vehicleServices.Vehicles.Add(vehicle);
+                    vehicleServices.CreateVehicle(vehicle);
                     break;
                 case 2:
                     Vehicle? vehicleToUpdate = vehicleServices.SearchVehicle();
@@ -389,5 +388,26 @@ static Client? ReadClient()
         return client;
     }
 }
+
+static string CheckEmail()
+{
+    while (true)
+    {
+        ClientServices clientServices = new ClientServices();
+        Console.Write("\nEnter the client email: ");
+        string? emailSearch = Console.ReadLine();
+
+        Client? client = clientServices.SearchClient(emailSearch);
+
+        if (client != null)
+        {
+            Console.Write("\nThere is already a client with this email. Please try another one.");
+            continue;
+        }
+        return emailSearch;
+    }
+}
+
+
 
 
