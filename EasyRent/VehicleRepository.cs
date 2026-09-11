@@ -24,4 +24,49 @@ public class VehicleRepository
         int id = Convert.ToInt32(sqlCommand.ExecuteScalar());
         vehicle.Id = id;
     }
+
+    public void UpdateVehicle(Vehicle vehicle, double dailyRate)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        string sqlVehicle = @"
+           UPDATE VEHICLE
+           SET DailyRate = @dailyRate
+           WHERE Id = @Id 
+        ";
+
+        SqlCommand sqlCommand = new SqlCommand(sqlVehicle, connection);
+        sqlCommand.Parameters.AddWithValue("@dailyRate", dailyRate);
+        sqlCommand.Parameters.AddWithValue("@Id", vehicle.Id);
+        sqlCommand.ExecuteNonQuery();
+        connection.Close();
+    }
+
+    public Vehicle? FindVehicleByLicensePlate(string? licensePlate)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        string sqlVehicle = @"
+          SELECT * FROM VEHICLE WHERE LICENSE_PLATE = @LicensePlate
+        ";
+
+        SqlCommand sqlCommand = new SqlCommand(sqlVehicle, connection);
+        sqlCommand.Parameters.AddWithValue("@LicensePlate", licensePlate);
+        Vehicle vehicle = new();
+        SqlDataReader reader = sqlCommand.ExecuteReader();
+        if(reader.Read())
+        {
+            vehicle.Id = Convert.ToInt32(reader["Id"]);
+            vehicle.Model = reader["Model"].ToString();
+            vehicle.LicencePlate = reader["License_Plate"].ToString();
+            vehicle.CarBody = (CarBody)Convert.ToInt32(reader["CarBody"]);
+            vehicle.DailyRate = Convert.ToDouble(reader["DailyRate"]);
+            vehicle.CurrentMileage = Convert.ToInt32(reader["CurrentMileage"]);
+            return vehicle;
+        }
+
+        return null;
+    }
 }
