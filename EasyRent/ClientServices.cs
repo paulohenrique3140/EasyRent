@@ -22,6 +22,11 @@
         return client;
     }
 
+    public List<Client>? SearchClient2(string? word)
+    {
+        return clientRepository.GetClientsByEmail2(word);
+    }
+
     public void UpdateClientEmail(Client client, string? newEmail)
     {
         clientRepository.UpdateClientEmail(client.Email, newEmail);

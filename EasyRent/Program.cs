@@ -130,13 +130,20 @@ while (true)
                     }
                     break;
                 case 4:
-                    Client? clientFound = ReadClient();
-
-                    if (clientFound != null)
+                    Console.Write("\nEnter client email: ");
+                    string? emailToFind = Console.ReadLine();
+                    List<Client>? clients = new List<Client>();
+                    clients = clientServices.SearchClient2(emailToFind);
+                    int i = 1;
+                    foreach(var client in clients)
                     {
-                        Console.WriteLine(clientFound.ShowClient());
-                        Console.ReadKey();
+                        Console.WriteLine($"\n{i} - {client.Email}");
+                        i++;
                     }
+                    Console.Write("\nChose the client email: ");
+                    int e = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine(clients[e-1].ShowClient());
+                    Console.ReadKey();
                     break;
                 case 5:
                     clientServices.ShowClientList();
@@ -228,7 +235,8 @@ while (true)
 
                     break;
                 case 5:
-                    vehicleServices.GetVehicles();
+                    vehicleServices.GetVehicles
+                        ();
                     Console.ReadKey();
                     break;
                 default:

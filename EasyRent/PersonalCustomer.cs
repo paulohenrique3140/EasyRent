@@ -128,16 +128,6 @@ public class PersonalCustomer : Client
         return (cleanedCpf[10] - '0') == secondVerificationDigit;
     }
 
-    /*public List<Client> FindClientsByName(string? name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            return new List<Client>();
-
-        return Clients.Where(client => client.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
-    }*/
-
-    
-
     public override string ShowClient()
     {
         return
