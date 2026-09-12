@@ -29,6 +29,11 @@ public class VehicleServices
     {
         return repository.FindVehicleByLicensePlate(licensePlate);
     }
+
+    public void DeleteVehicle(Vehicle vehicle)
+    {
+        repository.DeleteVehicle(vehicle);
+    }
     public void ShowVehicleList()
     {
         foreach (var vehicle in Vehicles)
@@ -37,6 +42,13 @@ public class VehicleServices
         }
     }
 
+    public void GetVehicles()
+    {
+        foreach (var vehicle in repository.GetVehicles())
+        {
+            Console.WriteLine(vehicle.ShowVehicle());
+        }
+    }
     public List<Vehicle> FindVehicleByModel(string? model)
     {
         if (string.IsNullOrWhiteSpace(model))

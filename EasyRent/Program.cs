@@ -64,7 +64,7 @@ while (true)
                     {
                         break;
                     }
-                    string email = CheckEmail();                    
+                    string email = CheckEmail();
                     Console.Write("\nEnter client phone number: ");
                     string phone = Console.ReadLine()!;
                     if (menuOption == 1)
@@ -197,37 +197,38 @@ while (true)
                     Console.ReadKey();
                     break;
                 case 3:
-                    Vehicle? vehicleToDelete = SearchVehicle();
-
-                    if (vehicleToDelete != null)
+                    Console.Write("\nEnter car license plate to delete: ");
+                    string? licensePlateToDelete = Console.ReadLine();
+                    Vehicle? vehicleToDelete = vehicleServices.FindVehicleByLicensePlate(licensePlateToDelete);
+                    if(vehicleToDelete == null)
                     {
-                        Console.WriteLine(vehicleToDelete.ShowVehicle());
-
-                        Console.Write("\nConfirm vehicle deletion? [y/n]: ");
-                        string? confirm = Console.ReadLine()?.ToLower();
-
-                        if (confirm == "y")
-                        {
-                            vehicleServices.Vehicles.Remove(vehicleToDelete);
-                        }
+                        Console.WriteLine("Not found! Please try again!");
+                        Console.ReadKey();
+                        break;
+                    }
+                    Console.WriteLine(vehicleToDelete.ShowVehicle());
+                    Console.Write("\nConfirm vehicle deletion? [y/n]: ");
+                    string? confirm = Console.ReadLine()?.ToLower();
+                    if (confirm == "y")
+                    {
+                        vehicleServices.DeleteVehicle(vehicleToDelete);
                     }
                     break;
                 case 4:
-                    /*Vehicle? vehicleFound = vehicleServices.SearchVehicle();
-
-                    if (vehicleFound != null)
-                    {
-                        Console.WriteLine(vehicleFound.ShowVehicle());
-                        Console.ReadKey();
-                    }*/
                     Console.Write("Enter car license plate: ");
                     string? licensePlateToFind = Console.ReadLine();
+                    if(vehicleServices.FindVehicleByLicensePlate(licensePlateToFind) == null)
+                    {
+                        Console.WriteLine("Car not found. Please try again!");
+                        Console.ReadKey();
+                        break;
+                    }
                     Console.WriteLine(vehicleServices.FindVehicleByLicensePlate(licensePlateToFind).ShowVehicle());
                     Console.ReadKey();
 
                     break;
                 case 5:
-                    vehicleServices.ShowVehicleList();
+                    vehicleServices.GetVehicles();
                     Console.ReadKey();
                     break;
                 default:

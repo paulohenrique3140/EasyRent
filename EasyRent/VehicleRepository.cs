@@ -69,4 +69,45 @@ public class VehicleRepository
 
         return null;
     }
+
+    public void DeleteVehicle(Vehicle vehicle)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        string sqlCommand = @"
+            DELETE FROM VEHICLE WHERE ID = @Id
+        ";
+
+        SqlCommand deleteCommand = new SqlCommand(sqlCommand, connection);
+        deleteCommand.Parameters.AddWithValue("@Id", vehicle.Id);
+        deleteCommand.ExecuteNonQuery();
+    }
+
+    public List<Vehicle>? GetVehicles()
+    {
+        List<Vehicle> vehicles = new List<Vehicle>();
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        string sqlCommand = @"
+            SELECT * FROM VEHICLE;
+        ";
+
+        SqlCommand command = new SqlCommand(sqlCommand, connection);
+        SqlDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            int id = Convert.ToInt32(reader["Id"]);
+            string? model = Convert.ToString(reader["Model"]);
+            string? licensePlate = Convert.ToString(reader["License_Plate"]);
+            CarBody carBody = (CarBody)Convert.ToInt32(reader["CarBody"]);
+            double dailyRate = Convert.ToDouble(reader["DailyRate"]);
+            int currentMileage = Convert.ToInt32(reader["CurrentMileage"]);
+            Vehicle vehicle = new Vehicle(model, licensePlate, carBody, dailyRate, currentMileage);
+            vehicle.Id = id;
+            vehicles.Add(vehicle);
+        }
+        return vehicles;
+    }
 }
