@@ -1,9 +1,14 @@
 ﻿public class RentalServices
 {
     // Properties
+    public RentalRepository rentalRepository = new RentalRepository();
     public List<Rental> Rentals { get; } = new List<Rental>();
 
     // Methods
+    public void AddRental(Rental rent)
+    {
+        rentalRepository.CreateRental(rent);
+    }
     public void ShowRents()
     {
         foreach (var rent in Rentals)

@@ -10,14 +10,10 @@ public abstract class Client
     // Constructors
     protected Client(string? email, string? phone)
     {
-        // method to return id from database
         Email = email;
         Phone = phone;
     }
-    protected Client()
-    {
-
-    }
+    protected Client(){}
 
     // Methods
     public abstract string ShowClient();

@@ -193,46 +193,35 @@ while (true)
                     break;
                 case 2:
                     double newDailyRate = 0;
-                    Console.Write("\nEnter car license plate: ");
-                    string? licensePlateToUpdate = Console.ReadLine();
-                    if (vehicleServices.FindVehicleByLicensePlate(licensePlateToUpdate) != null)
+                    Vehicle vehicleToUpdate = SearchVehicle();
+                    if(vehicleToUpdate != null)
                     {
                         Console.Write("\nEnter new daily rate to update: $ ");
                         newDailyRate = Convert.ToDouble(Console.ReadLine());
-                    }
-                    vehicleServices.UpdateVehicleDailyRate(licensePlateToUpdate, newDailyRate);
-                    Console.ReadKey();
+                        vehicleServices.UpdateVehicleDailyRate(vehicleToUpdate.LicencePlate, newDailyRate);
+                        Console.WriteLine("Updated data!");
+                    }                    
                     break;
                 case 3:
-                    Console.Write("\nEnter car license plate to delete: ");
-                    string? licensePlateToDelete = Console.ReadLine();
-                    Vehicle? vehicleToDelete = vehicleServices.FindVehicleByLicensePlate(licensePlateToDelete);
-                    if(vehicleToDelete == null)
+                    Vehicle vehicleToDelete = SearchVehicle();
+                    if (vehicleToDelete != null)
                     {
-                        Console.WriteLine("Not found! Please try again!");
-                        Console.ReadKey();
-                        break;
-                    }
-                    Console.WriteLine(vehicleToDelete.ShowVehicle());
-                    Console.Write("\nConfirm vehicle deletion? [y/n]: ");
-                    string? confirm = Console.ReadLine()?.ToLower();
-                    if (confirm == "y")
-                    {
-                        vehicleServices.DeleteVehicle(vehicleToDelete);
+                        Console.WriteLine(vehicleToDelete.ShowVehicle());
+                        Console.Write("\nConfirm vehicle deletion? [y/n]: ");
+                        string? confirm = Console.ReadLine()?.ToLower();
+                        if (confirm == "y")
+                        {
+                            vehicleServices.DeleteVehicle(vehicleToDelete);
+                        }
                     }
                     break;
                 case 4:
-                    Console.Write("Enter car license plate: ");
-                    string? licensePlateToFind = Console.ReadLine();
-                    if(vehicleServices.FindVehicleByLicensePlate(licensePlateToFind) == null)
+                    Vehicle vehicleToFind = SearchVehicle();
+                    if (vehicleToFind != null)
                     {
-                        Console.WriteLine("Car not found. Please try again!");
-                        Console.ReadKey();
-                        break;
+                        Console.WriteLine(vehicleToFind.ShowVehicle());
                     }
-                    Console.WriteLine(vehicleServices.FindVehicleByLicensePlate(licensePlateToFind).ShowVehicle());
                     Console.ReadKey();
-
                     break;
                 case 5:
                     vehicleServices.GetVehicles
@@ -276,7 +265,7 @@ while (true)
                     {
                         Console.WriteLine(clientToRent.ShowClient());
                         Console.WriteLine("\n-=-=- Car available list -=-=-");
-                        vehicleServices.ShowVehicleList();
+                        vehicleServices.GetVehicles();
                         Console.Write("\nChoose a car to rental");
                         Vehicle? vehicleToRent = SearchVehicle();
                         if (vehicleToRent != null)
@@ -284,12 +273,15 @@ while (true)
                             Console.WriteLine(vehicleToRent.ShowVehicle());
                             Console.Write("\nEnter the number of rental days: ");
                             int rentalDays = Convert.ToInt32(Console.ReadLine());
-                            Console.Write("\nWould you like to add insurance for $50.00 per day? [y/n]: ");
-                            var insurance = Console.ReadLine().ToLower();
-                            bool hasInsurance = insurance == "y";
-                            Rental rental = new Rental(clientToRent, vehicleToRent, rentalDays, hasInsurance, vehicleToRent.CurrentMileage, RentStatus.Open);
-                            rentalServices.Rentals.Add(rental);
-                            Console.WriteLine("\nContract signed!" + rental.ShowOpenRental());
+                            if(rentalDays < 30)
+                            {
+                                Console.Write("\nWould you like to add insurance for 50.00 per day? [y/n]: ");
+                                var insurance = Console.ReadLine().ToLower();
+                                bool hasInsurance = insurance == "y";
+                                Rental rental = new DailyRental(clientToRent, vehicleToRent, rentalDays, RentStatus.Open, vehicleToRent.CurrentMileage, hasInsurance);
+                                rentalServices.AddRental(rental);
+                                Console.WriteLine("\nContract signed!" + rental.ShowOpenRental());
+                            }
                             Console.ReadKey();
                             break;
                         }
@@ -429,39 +421,21 @@ static Vehicle? SearchVehicle()
     while (true)
     {
         VehicleServices vehicleServices = new VehicleServices();
-        Console.Write("\nEnter the car model [type r to return]: ");
-        string? modelSearch = Console.ReadLine();
+        Console.Write("\nEnter the car license plate [type r to return]: ");
+        string? licensePlateSearch = Console.ReadLine();
 
-        if (modelSearch?.ToLower() == "r")
+        if (licensePlateSearch.ToLower() == "r")
             return null;
 
-        List<Vehicle> vehiclesFound = vehicleServices.FindVehicleByModel(modelSearch);
+        
 
-        if (vehiclesFound.Count == 0)
+        if (vehicleServices.FindVehicleByLicensePlate(licensePlateSearch) == null)
         {
             Console.WriteLine("\nNo vehicle were found. Please try again.");
             continue;
         }
 
-        if (vehiclesFound.Count == 1)
-        {
-            return vehiclesFound[0];
-        }
-
-        Console.WriteLine("\nVehicles found:");
-
-        for (int i = 0; i < vehiclesFound.Count; i++)
-        {
-            Console.WriteLine($"[{i + 1}] {vehiclesFound[i].Model} - License plate: {vehiclesFound[i].LicencePlate}");
-        }
-
-        Console.WriteLine("\nSelect a car: ");
-
-        if (int.TryParse(Console.ReadLine(), out int option) && option >= 1 && option <= vehiclesFound.Count)
-        {
-            return vehiclesFound[option - 1];
-        }
-        Console.WriteLine("\nInvalid option. Please try again.");
+        return vehicleServices.FindVehicleByLicensePlate(licensePlateSearch);
     }
 }
 
