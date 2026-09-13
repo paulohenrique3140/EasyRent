@@ -2,6 +2,7 @@
 {
     // Properties
     public RentalRepository rentalRepository = new RentalRepository();
+    public VehicleRepository vehicleRepository = new VehicleRepository();
     public List<Rental> Rentals { get; } = new List<Rental>();
 
     // Methods
@@ -9,11 +10,30 @@
     {
         rentalRepository.CreateRental(rent);
     }
+
+    public Rental? FindRentalToClose(Client client)
+    {
+        return rentalRepository.GetRentalToClose(client);
+    }
+
+    public bool CloseRental(int endingMileage, Vehicle? vehicle, Rental? rental)
+    {
+        if (endingMileage >= vehicle.CurrentMileage)
+        {
+            vehicleRepository.UpdateMileage(vehicle, endingMileage);
+            rentalRepository.UpdateStatus(rental);
+            rental.Status = RentStatus.Finished;
+            return true;
+        }
+        return false;
+    }
+
+
     public void ShowRents()
     {
         foreach (var rent in Rentals)
         {
-            Console.WriteLine(rent.ShowSummary(rent.Vehicle.CurrentMileage));
+            Console.WriteLine(rent.ShowSummary());
         }
     }  
 

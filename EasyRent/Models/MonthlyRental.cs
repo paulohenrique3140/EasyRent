@@ -45,7 +45,7 @@ public class MonthlyRental : Rental
         return total;
     }
 
-    public override string ShowSummary(int currentMileage)
+    public override string ShowSummary()
     {
         StringBuilder sb = new StringBuilder();
         if (Status == RentStatus.Canceled)

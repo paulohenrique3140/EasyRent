@@ -3,8 +3,8 @@
 public class DailyRental : Rental
 {
     // Properties
-    public int InitialMileage { get; private set; }
-    public bool HasInsurance { get; private set; }
+    public int InitialMileage { get; set; }
+    public bool HasInsurance { get; set; }
 
     // Constructor
     public DailyRental(Client client, Vehicle vehicle, int rentalDays, RentStatus status, int inicialMileage, bool hasInsurance) : base(client, vehicle, rentalDays, status)
@@ -51,7 +51,7 @@ public class DailyRental : Rental
         return total;
     }
 
-    public override string ShowSummary(int currentMileage)
+    public override string ShowSummary()
     {
         StringBuilder sb = new StringBuilder();
         if (Status == RentStatus.Canceled)

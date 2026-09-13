@@ -1,4 +1,6 @@
 ﻿// Services
+using System.Threading.Channels;
+
 RentalServices rentalServices = new RentalServices();
 ClientServices clientServices = new ClientServices();
 VehicleServices vehicleServices = new VehicleServices();
@@ -132,8 +134,13 @@ while (true)
                 case 4:
                     Console.Write("\nEnter client email: ");
                     string? emailToFind = Console.ReadLine();
-                    List<Client>? clients = new List<Client>();
-                    clients = clientServices.SearchClient2(emailToFind);
+                    List<Client>? clients = clientServices.SearchClient2(emailToFind);
+                    while(clients.Count == 0)
+                    {
+                        Console.Write("\nThere's no client with this search! Please try again: ");
+                        emailToFind = Console.ReadLine();
+                        clients = clientServices.SearchClient2(emailToFind);
+                    }
                     int i = 1;
                     foreach(var client in clients)
                     {
@@ -282,27 +289,50 @@ while (true)
                                 rentalServices.AddRental(rental);
                                 Console.WriteLine("\nContract signed!" + rental.ShowOpenRental());
                             }
+                            else
+                            {
+                                Rental rental = new MonthlyRental(clientToRent, vehicleToRent, rentalDays, RentStatus.Open, false);
+                                rentalServices.AddRental(rental);
+                                Console.WriteLine("\nContract signed!" + rental.ShowOpenRental());
+                            }
                             Console.ReadKey();
                             break;
                         }
                     }
                     break;
                 case 2:
-                    foreach (Rental rental in rentalServices.FindOpenRentals())
+                    Console.Write("\nEnter client email to close rental: ");
+                    string? emailToFind = Console.ReadLine();
+                    List<Client>? clients = clientServices.SearchClient2(emailToFind);
+                    while (clients.Count == 0)
                     {
-                        Console.WriteLine(rental.ShowOpenRental());
+                        Console.Write("\nThere's no client with this search! Please try again: ");
+                        emailToFind = Console.ReadLine();
+                        clients = clientServices.SearchClient2(emailToFind);
                     }
-                    Rental? rentalToClose = rentalServices.SearchRentalToClose();
+                    int i = 1;
+                    foreach (var client in clients)
+                    {
+                        Console.WriteLine($"\n{i} - {client.Email}");
+                        i++;
+                    }
+                    Console.Write("\nChose the client email to close rental: ");
+                    int e = Convert.ToInt32(Console.ReadLine());
+                    Client clientToClose = clients[e - 1];
+                    clientToClose.ShowClient();
+                    Rental? rentalToClose = rentalServices.FindRentalToClose(clientToClose);
                     if (rentalToClose == null)
                     {
-                        break;
+                        Console.WriteLine("There's no open rental for this client.");
                     }
-                    Console.Write("\nEnter current car mileage [km]: ");
-                    int currentMileage = Convert.ToInt32(Console.ReadLine());
-                    rentalToClose.CloseRental(currentMileage);
-                    Console.WriteLine("\nRental closed!");
-                    Console.WriteLine(rentalToClose.ShowOpenRental());
-                    Console.WriteLine(rentalToClose.ShowSummary(rentalToClose.Vehicle.CurrentMileage));
+                    else
+                    {
+                        Console.Write("\nEnter current car mileage [km]: ");
+                        int currentMileage = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine(rentalToClose.ShowOpenRental());
+                        rentalServices.CloseRental(currentMileage, rentalToClose.Vehicle, rentalToClose);                        
+                        Console.WriteLine(rentalToClose.ShowSummary());
+                    }
                     Console.ReadKey();
                     break;
                 case 3:
@@ -316,7 +346,7 @@ while (true)
                         break;
                     }
                     rentalToCancel.CancelRental();
-                    Console.WriteLine("\n" + rentalToCancel.ShowSummary(0));
+                    Console.WriteLine("\n" + rentalToCancel.ShowSummary());
                     Console.ReadKey();
                     break;
                 case 4:
@@ -328,7 +358,7 @@ while (true)
                     foreach (Rental rental in rentalServices.FindFinishedRentalsByClient(clientToListRentals.Email))
                     {
                         Console.WriteLine(rental.ShowOpenRental());
-                        Console.WriteLine(rental.ShowSummary(rental.Vehicle.CurrentMileage));
+                        Console.WriteLine(rental.ShowSummary());
                     }
                     Console.ReadKey();
                     break;
@@ -341,7 +371,7 @@ while (true)
                     foreach (Rental rental in rentalServices.FindFinishedRentalsByVehicle(vehicleToListRentals.LicencePlate))
                     {
                         Console.WriteLine(rental.ShowOpenRental());
-                        Console.WriteLine(rental.ShowSummary(rental.Vehicle.CurrentMileage));
+                        Console.WriteLine(rental.ShowSummary());
                     }
                     Console.ReadKey();
                     break;

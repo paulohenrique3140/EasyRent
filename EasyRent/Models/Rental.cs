@@ -5,8 +5,8 @@ public abstract class Rental : IRental
     // Properties
 
     public int Id { get; set; }
-    public Client? Client { get; }
-    public Vehicle? Vehicle { get; }
+    public Client? Client { get; set; }
+    public Vehicle? Vehicle { get; set; }
     private int rentalDays;
     public int RentalDays 
     {
@@ -21,7 +21,10 @@ public abstract class Rental : IRental
         }
     }
     
-    public RentStatus Status { get; private set; }
+    public RentStatus Status { get; set; }
+
+    VehicleRepository vehicleRepository = new VehicleRepository();
+    RentalRepository rentalRepository = new RentalRepository();
 
     // Constructors
     public Rental(Client client, Vehicle vehicle, int rentalDays, RentStatus status) 
@@ -39,16 +42,6 @@ public abstract class Rental : IRental
 
     public abstract double CalculateTotal();
 
-    public bool CloseRental(int endingMileage)
-    {
-        if (endingMileage >= Vehicle.CurrentMileage)
-        {
-            Vehicle.UpdateMileage(endingMileage);
-            Status = RentStatus.Finished;
-            return true;
-        }
-        return false;
-    }
     public void CancelRental()
     {
         Status = RentStatus.Canceled;
@@ -65,5 +58,5 @@ public abstract class Rental : IRental
         return sb.ToString();
     }
 
-    public abstract string ShowSummary(int currentMileage);
+    public abstract string ShowSummary();
 }

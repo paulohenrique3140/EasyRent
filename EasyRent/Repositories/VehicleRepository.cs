@@ -43,6 +43,23 @@ public class VehicleRepository
         connection.Close();
     }
 
+    public void UpdateMileage(Vehicle vehicle, int endingMileage)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        string sqlCommand = @"
+            UPDATE VEHICLE
+            SET CurrentMileage = @endingMileage
+            WHERE Id = @Id";
+
+        SqlCommand command = new SqlCommand(sqlCommand, connection);
+        command.Parameters.AddWithValue("@endingMileage", endingMileage);
+        command.Parameters.AddWithValue("@Id", vehicle.Id);
+        command.ExecuteNonQuery();
+        connection.Close();
+    }
+
     public Vehicle? FindVehicleByLicensePlate(string? licensePlate)
     {
         using SqlConnection connection = new SqlConnection(connectionString);
@@ -57,6 +74,33 @@ public class VehicleRepository
         Vehicle vehicle = new();
         SqlDataReader reader = sqlCommand.ExecuteReader();
         if(reader.Read())
+        {
+            vehicle.Id = Convert.ToInt32(reader["Id"]);
+            vehicle.Model = reader["Model"].ToString();
+            vehicle.LicencePlate = reader["License_Plate"].ToString();
+            vehicle.CarBody = (CarBody)Convert.ToInt32(reader["CarBody"]);
+            vehicle.DailyRate = Convert.ToDouble(reader["DailyRate"]);
+            vehicle.CurrentMileage = Convert.ToInt32(reader["CurrentMileage"]);
+            return vehicle;
+        }
+
+        return null;
+    }
+
+    public Vehicle? FindVehicleById(int id)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        string sqlVehicle = @"
+          SELECT * FROM VEHICLE WHERE ID = @Id
+        ";
+
+        SqlCommand sqlCommand = new SqlCommand(sqlVehicle, connection);
+        sqlCommand.Parameters.AddWithValue("@Id", id);
+        Vehicle vehicle = new();
+        SqlDataReader reader = sqlCommand.ExecuteReader();
+        if (reader.Read())
         {
             vehicle.Id = Convert.ToInt32(reader["Id"]);
             vehicle.Model = reader["Model"].ToString();
