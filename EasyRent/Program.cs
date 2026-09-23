@@ -1,5 +1,4 @@
 ﻿// Services
-using System.Threading.Channels;
 
 RentalServices rentalServices = new RentalServices();
 ClientServices clientServices = new ClientServices();
@@ -336,17 +335,29 @@ while (true)
                     Console.ReadKey();
                     break;
                 case 3:
+                    
                     foreach (Rental rental in rentalServices.FindOpenRentals())
                     {
                         Console.WriteLine(rental.ShowOpenRental());
                     }
-                    Rental? rentalToCancel = rentalServices.SearchRentalToClose();
-                    if (rentalToCancel == null)
+
+                    Console.Write("\nEnter client ID to cancel the rental: ");
+                    int clientIdToCancel = Convert.ToInt32(Console.ReadLine());
+                    Client clientToCancel = clientRepository.GetClientById(clientIdToCancel);
+
+                    if(clientToCancel == null)
                     {
+                        Console.WriteLine("Not found. Please try again");
                         break;
                     }
-                    rentalToCancel.CancelRental();
-                    Console.WriteLine("\n" + rentalToCancel.ShowSummary());
+
+                    foreach (Rental rental in rentalServices.FindOpenRentals())
+                    {
+                        if(rental.Client.Id == clientIdToCancel)
+                        {
+                            rentalServices.CancelReservation(rental);
+                        }
+                    }
                     Console.ReadKey();
                     break;
                 case 4:

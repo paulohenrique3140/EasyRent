@@ -28,6 +28,16 @@
         return false;
     }
 
+    public List<Rental>? FindOpenRentals()
+    {
+        return rentalRepository.GetOpenRentals();
+    }
+
+    public void CancelReservation(Rental rental)
+    {
+        rentalRepository.CancelRental(rental);
+    }
+
 
     public void ShowRents()
     {
@@ -37,10 +47,6 @@
         }
     }  
 
-    public List<Rental> FindOpenRentals()
-    {
-        return Rentals.Where(rental => rental.Status == RentStatus.Open).ToList();
-    }
 
     public List<Rental> FindFinishedRentals()
     {

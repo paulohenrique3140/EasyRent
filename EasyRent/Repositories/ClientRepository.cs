@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 public class ClientRepository
 {
@@ -320,5 +321,68 @@ public class ClientRepository
         command.Parameters.AddWithValue("@Id", client.Id);
         command.ExecuteNonQuery();
         connection.Close();
+    }
+
+    public Client? GetClientById(int id)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+        
+
+        string sqlCommand = @"
+            SELECT * FROM CLIENT WHERE ID = @Id
+        ";
+        SqlCommand command = new SqlCommand(sqlCommand, connection);
+        command.Parameters.AddWithValue("Id", id);
+        SqlDataReader reader = command.ExecuteReader();
+        if (!reader.Read())
+        {
+            return null;
+        }
+
+        int findId = (int)reader["Id"];
+        string findEmail = reader["Email"].ToString();
+        string phone = reader["Phone"].ToString();
+        reader.Close();
+
+        string sqlCommand2 = @"
+            SELECT * FROM PERSONAL_CUSTOMER WHERE ClientId = @Id
+        ";
+        SqlCommand command2 = new SqlCommand(sqlCommand2, connection);
+        command2.Parameters.AddWithValue("@Id", findId);
+        reader = command2.ExecuteReader();
+        if (reader.Read())
+        {
+            PersonalCustomer pc = new PersonalCustomer();
+            pc.Id = findId;
+            pc.Email = findEmail;
+            pc.Phone = phone;
+            pc.Name = Convert.ToString(reader["Name"]);
+            pc.Cpf = Convert.ToString(reader["CPF"]);
+            pc.Cnh = Convert.ToString(reader["CNH"]);
+            pc.BirthDate = (DateTime)reader["Birth_Date"];
+            pc.RideshareDriver = Convert.ToBoolean(reader["Rideshare_Driver"]);
+            return pc;
+        }
+        reader.Close();
+
+        string sqlCommand3 = @"
+            SELECT * FROM BUSINESS_CUSTOMER WHERE ClientId = @Id
+        ";
+        SqlCommand command3 = new SqlCommand(sqlCommand3, connection);
+        command3.Parameters.AddWithValue("Id", findId);
+        reader = command3.ExecuteReader();
+        if (reader.Read())
+        {
+            BusinessCustomer bc = new BusinessCustomer();
+            bc.Id = findId;
+            bc.Email = findEmail;
+            bc.Phone = phone;
+            bc.CompanyName = Convert.ToString(reader["Company_Name"]);
+            bc.Cnpj = Convert.ToString(reader["CNPJ"]);
+            bc.OpeningDate = (DateTime)reader["Opening_Date"];
+            return bc;
+        }
+        return null;
     }
 }

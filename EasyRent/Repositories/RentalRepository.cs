@@ -2,7 +2,7 @@
 public class RentalRepository
 {
     private readonly string connectionString = "Server=PAULO;DataBase=EASY_RENT;Integrated Security=True;TrustServerCertificate=True;";
-
+    ClientRepository clientRepository = new ClientRepository();
     VehicleRepository vehicleRepository = new VehicleRepository();
     public void CreateRental(Rental rental)
     {
@@ -104,6 +104,51 @@ public class RentalRepository
         return null;
     }
 
+    public List<Rental>? GetOpenRentals()
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+        List<Rental> openRentals = new List<Rental>();
+
+        string sqlCommand = @"
+            SELECT * FROM DAILY_RENTAL WHERE STATUS = 1;
+        ";
+        SqlCommand command = new SqlCommand(sqlCommand, connection);
+        SqlDataReader reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            DailyRental dr = new DailyRental();
+            dr.Id = Convert.ToInt32(reader["Id"]);
+            dr.Client = clientRepository.GetClientById(Convert.ToInt32(reader["ClientId"]));
+            dr.Vehicle = vehicleRepository.FindVehicleById(Convert.ToInt32(reader["VehicleId"]));
+            dr.RentalDays = Convert.ToInt32(reader["RentalDays"]);
+            dr.Status = (RentStatus)Convert.ToInt32(reader["Status"]);
+            dr.InitialMileage = Convert.ToInt32(reader["InitialMileage"]);
+            dr.HasInsurance = Convert.ToBoolean(reader["HasInsurance"]);
+            openRentals.Add(dr);
+        }
+        reader.Close();
+
+        string sqlCommand2 = @"
+            SELECT * FROM MONTHLY_RENTAL WHERE STATUS = 1;
+        ";
+        SqlCommand command2 = new SqlCommand(sqlCommand2, connection);
+        reader = command2.ExecuteReader();
+        while (reader.Read())
+        {
+            MonthlyRental mr = new MonthlyRental();
+            mr.Id = Convert.ToInt32(reader["Id"]);
+            mr.Client = clientRepository.GetClientById(Convert.ToInt32(reader["ClientId"]));
+            mr.Vehicle = vehicleRepository.FindVehicleById(Convert.ToInt32(reader["VehicleId"]));
+            mr.RentalDays = Convert.ToInt32(reader["RentalDays"]);
+            mr.Status = (RentStatus)Convert.ToInt32(reader["Status"]);
+            mr.Extended = Convert.ToBoolean(reader["Extended"]);
+            openRentals.Add(mr);
+        }
+
+        return openRentals;
+    }
+
     public void UpdateStatus(Rental? rental)
     {
         using SqlConnection connection = new SqlConnection(connectionString);
@@ -127,6 +172,38 @@ public class RentalRepository
             string sqlCommand = @"
               UPDATE MONTHLY_RENTAL
               SET Status = 2
+              WHERE Id = @Id
+             ";
+
+            SqlCommand command = new SqlCommand(sqlCommand, connection);
+            command.Parameters.AddWithValue("@Id", rental.Id);
+            command.ExecuteNonQuery();
+        }
+    }
+
+    public void CancelRental(Rental? rental)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        if (rental is DailyRental)
+        {
+            string sqlCommand = @"
+              UPDATE DAILY_RENTAL
+              SET Status = 3
+              WHERE Id = @Id
+             ";
+
+            SqlCommand command = new SqlCommand(sqlCommand, connection);
+            command.Parameters.AddWithValue("@Id", rental.Id);
+            command.ExecuteNonQuery();
+        }
+
+        else if (rental is MonthlyRental)
+        {
+            string sqlCommand = @"
+              UPDATE MONTHLY_RENTAL
+              SET Status = 3
               WHERE Id = @Id
              ";
 
