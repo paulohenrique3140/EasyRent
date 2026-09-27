@@ -212,4 +212,58 @@ public class RentalRepository
             command.ExecuteNonQuery();
         }
     }
+
+    public List<Rental>? GetRentalsByClient(int clientId)
+    {
+        using SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+        List<Rental> rentals = new List<Rental>();
+
+        string sqlCommand = @"
+            SELECT * FROM DAILY_RENTAL WHERE CLIENTID = @ClientId
+        ";
+
+        SqlCommand command = new SqlCommand(sqlCommand, connection);
+        command.Parameters.AddWithValue("@ClientId", clientId);
+
+        SqlDataReader reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            DailyRental dr = new DailyRental();
+            dr.Id = Convert.ToInt32(reader["Id"]);
+            dr.Client = clientRepository.GetClientById(Convert.ToInt32(reader["ClientId"]));
+            dr.Vehicle = vehicleRepository.FindVehicleById(Convert.ToInt32(reader["VehicleId"]));
+            dr.RentalDays = Convert.ToInt32(reader["RentalDays"]);
+            dr.Status = (RentStatus)Convert.ToInt32(reader["Status"]);
+            dr.InitialMileage = Convert.ToInt32(reader["InitialMileage"]);
+            dr.HasInsurance = Convert.ToBoolean(reader["HasInsurance"]);
+            rentals.Add(dr);
+        }
+        reader.Close();
+
+        string sqlcommand2 = @"
+            SELECT * FROM MONTHLY_RENTAL WHERE CLIENTID = @ClientId
+        ";
+
+        SqlCommand command2 = new SqlCommand(sqlcommand2, connection);
+        command2.Parameters.AddWithValue("@ClientId", clientId);
+
+        reader = command2.ExecuteReader();
+
+        while (reader.Read()) 
+        {
+            MonthlyRental mr = new MonthlyRental();
+            mr.Id = Convert.ToInt32(reader["Id"]);
+            mr.Client = clientRepository.GetClientById(Convert.ToInt32(reader["ClientId"]));
+            mr.Vehicle = vehicleRepository.FindVehicleById(Convert.ToInt32(reader["VehicleId"]));
+            mr.RentalDays = Convert.ToInt32(reader["RentalDays"]);
+            mr.Status = (RentStatus)Convert.ToInt32(reader["Status"]);
+            mr.Extended = Convert.ToBoolean(reader["Extended"]);
+            rentals.Add(mr);
+        }
+        reader.Close();
+        
+        return rentals;
+    }
 }

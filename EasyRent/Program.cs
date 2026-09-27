@@ -260,7 +260,6 @@ while (true)
                               "\n[2] Complete rental" +
                               "\n[3] Cancel reservation" +
                               "\n[4] List rentals by client" +
-                              "\n[5] List rentals by vehicle" +
                               "\n[0] Return to main menu\n");
             menuOption = ReadMenuOption(5);
             switch (menuOption)
@@ -361,28 +360,31 @@ while (true)
                     Console.ReadKey();
                     break;
                 case 4:
-                    Client? clientToListRentals = ReadClient();
-                    if (clientToListRentals == null)
+                    Console.Write("\nEnter cliend ID: ");
+                    int clientIdToList = Convert.ToInt32(Console.ReadLine());
+                    Client clientToList = clientRepository.GetClientById(clientIdToList);
+                    VehicleRepository vehicleRepository = new VehicleRepository();
+
+                    if(clientToList == null)
                     {
+                        Console.WriteLine("Client not found. Please try again!");
+                        Console.ReadKey();
                         break;
                     }
-                    foreach (Rental rental in rentalServices.FindFinishedRentalsByClient(clientToListRentals.Email))
+
+                    if(rentalServices.ListFinishedRentals(clientIdToList) == null)
+                    {
+                        Console.WriteLine("There are no rentals registered for this client.");
+                        Console.ReadKey();
+                        break;
+                    }
+
+                    Console.WriteLine(clientToList.ShowClient());
+                    foreach (Rental rental in rentalServices.ListFinishedRentals(clientIdToList))
                     {
                         Console.WriteLine(rental.ShowOpenRental());
                         Console.WriteLine(rental.ShowSummary());
-                    }
-                    Console.ReadKey();
-                    break;
-                case 5:
-                    Vehicle? vehicleToListRentals = SearchVehicle();
-                    if (vehicleToListRentals == null)
-                    {
-                        break;
-                    }
-                    foreach (Rental rental in rentalServices.FindFinishedRentalsByVehicle(vehicleToListRentals.LicencePlate))
-                    {
-                        Console.WriteLine(rental.ShowOpenRental());
-                        Console.WriteLine(rental.ShowSummary());
+                        Console.WriteLine("=================================");
                     }
                     Console.ReadKey();
                     break;
