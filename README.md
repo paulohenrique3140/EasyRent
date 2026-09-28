@@ -129,13 +129,13 @@ EasyRent/
 │   └── RentalServices.cs
 │
 └── Program.cs
+```
 
 ## 🧩 Class Diagram
 
 The diagram below provides an overview of the main classes, inheritance relationships, interfaces, services, repositories, and enums used in the project.
 
 ![EasyRent Class Diagram](class-diagram.png)
-```
 
 ### Models
 
